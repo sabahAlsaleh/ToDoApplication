@@ -1,0 +1,30 @@
+﻿@using ToDoApp.Models
+@using ToDoApp.Services
+@inject ToDoService ToDoService
+
+<h3>Add To-Do</h3>
+<EditForm Model="@newToDo" OnValidSubmit="HandleSubmit">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+    <div class="form-group">
+        <label>Title:</label>
+        <InputText class="form-control" @bind-Value="newToDo.Title" />
+    </div>
+    <button type="submit" class="btn btn-primary">Add</button>
+</EditForm>
+
+@code {
+    [Parameter]
+    public EventCallback<ToDoItem> OnSubmit { get; set; }
+
+    private ToDoItem newToDo = new();
+
+    private async Task HandleSubmit()
+    {
+        if (OnSubmit.HasDelegate)
+        {
+            await OnSubmit.InvokeAsync(newToDo);
+            newToDo = new ToDoItem(); // Reset the form
+        }
+    }
+}

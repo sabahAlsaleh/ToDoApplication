@@ -1,0 +1,42 @@
+﻿@using ToDoApp.Models
+@using ToDoApp.Services
+@page "/todo-list"
+@inject ToDoService ToDoService
+
+
+<h3>To-Do List</h3>
+<ToDoForm OnSubmit="AddItem" />
+
+<ul>
+    @foreach (var item in items)
+    {
+        <li class="list-group-item d-flex justify-content-between align-items-center">
+            <div>
+                <input type="checkbox" @bind="item.IsCompleted" />
+                @item.Title
+            </div>
+            <button class="btn btn-danger btn-sm" @onclick="() => RemoveItem(item.Id)">Remove</button>
+        </li>
+    }
+</ul>
+
+@code {
+    private List<ToDoItem> items = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        items = (await ToDoService.GetItemsAsync()).ToList();
+    }
+
+    private async Task AddItem(ToDoItem newItem)
+    {
+        await ToDoService.AddItemAsync(newItem);
+        items = (await ToDoService.GetItemsAsync()).ToList();
+    }
+
+    private async Task RemoveItem(int id)
+    {
+        await ToDoService.RemoveItemAsync(id);
+        items = (await ToDoService.GetItemsAsync()).ToList();
+    }
+}
